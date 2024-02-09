@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .orders-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-gap: 10px;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease; /* Add transition effect */
+        }
+
+        .order-details {
+            margin-bottom: 5px;
+        }
+
+        .order-details p {
+            margin: 0;
+        }
+
+        .order-number {
+            font-weight: bold;
+        }
+
+        .time {
+            color: #888;
+        }
+
+        .state {
+            text-transform: capitalize;
+            font-style: italic;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Display Order</h1>
+    <div class="orders-container" id="orders-container">
+        <!-- Orders will be displayed here -->
+    </div>
+    <script>
+        // Function to display orders
+        function displayOrders() {
+            const ordersContainer = document.getElementById('orders-container');
+    
+            // Retrieve orders from localStorage
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+            // Clear previous content
+            ordersContainer.innerHTML = '';
+    
+            // Loop through each order and create HTML elements to display them
+            orders.forEach(order => {
+                const orderDiv = document.createElement('div');
+                orderDiv.classList.add('order-card');
+    
+                // Set background color based on the state
+                orderDiv.style.backgroundColor = getOrderBackgroundColor(order.state);
+    
+                // Create HTML content for displaying order details
+                orderDiv.innerHTML = `
+                    <div class="order-details">
+                        <p class="order-number">Order Number: ${order.orderNumber}</p>
+                        <p class="state">State: ${order.state}</p>
+                    </div>
+                    <p class="time">Time Reminder: ${order.time}</p>
+                `;
+    
+                ordersContainer.appendChild(orderDiv);
+            });
+        }
+    
+        // Call displayOrders() when the page loads
+        displayOrders();
+    
+        // Listen for changes to storage and update orders accordingly
+        window.addEventListener('storage', () => {
+            displayOrders();
+        });
+    
+        // Function to get background color based on order state
+        function getOrderBackgroundColor(state) {
+            switch (state) {
+                case 'pending':
+                    return 'lightyellow';
+                case 'processing':
+                    return 'lightblue';
+                case 'completed':
+                    return 'lightgreen';
+                default:
+                    return 'transparent';
+            }
+        }
+    </script>
+    
+    
+</body>
+</html>

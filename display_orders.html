@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .order-details {
+            margin-bottom: 5px;
+        }
+
+        .order-details p {
+            margin: 0;
+        }
+
+        .order-number {
+            font-weight: bold;
+        }
+
+        .time {
+            color: #888;
+        }
+
+        .state {
+            text-transform: capitalize;
+            font-style: italic;
+            color: #007bff;
+        }
+
+        .edit-button, .delete-button {
+            position: absolute;
+            top: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .edit-button {
+            right: 10px;
+            top: 40px;
+        }
+
+        .delete-button {
+            right: 10px;
+        }
+
+        .edit-state-dropdown {
+            position: absolute;
+            top: calc(100% + 5px); /* Position below the edit button */
+            right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 5px;
+            background-color: #fff;
+            display: none; /* Initially hide the dropdown */
+        }
+
+        .completed {
+            background-color: lightgreen; /* Background color for completed orders */
+        }
+    </style>
+</head>
+<body>
+    <h1>Add Order</h1>
+    <div class="orders-grid" id="orders-list">
+        <!-- Orders will be displayed here -->
+    </div>
+
+    <div id="order-form">
+        <label for="order-number">Order Number:</label>
+        <input type="text" id="order-number">
+        <label for="time">Time Reminder:</label>
+        <input type="time" id="time">
+        <label for="state">State of Order:</label>
+        <select id="state">
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="completed">Completed</option>
+        </select>
+        <button onclick="addOrder()">Add Order</button>
+    </div>
+
+    <script>
+        // Function to display orders
+        function displayOrders() {
+            const ordersListDiv = document.getElementById('orders-list');
+            ordersListDiv.innerHTML = '';
+    
+            // Retrieve orders from localStorage
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+            // Loop through each order and create HTML elements to display them
+            orders.forEach((order, index) => {
+                const orderDiv = document.createElement('div');
+                orderDiv.classList.add('order-card');
+    
+                // Set background color based on the state
+                orderDiv.style.backgroundColor = getOrderBackgroundColor(order.state);
+    
+                orderDiv.innerHTML = `
+                    <div class="order-details">
+                        <p class="order-number">Order Number: ${order.orderNumber}</p>
+                        <p class="state">State: ${order.state}</p>
+                    </div>
+                    <p class="time">Time Reminder: ${order.time}</p>
+                    <button class="edit-button" onclick="toggleEditStateDropdown(${index})">Edit</button>
+                    <button class="delete-button" onclick="deleteOrder(${index})">Delete</button>
+                    <select class="edit-state-dropdown" onchange="updateOrderState(${index}, this)">
+                        <option value="pending" ${order.state === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="processing" ${order.state === 'processing' ? 'selected' : ''}>Processing</option>
+                        <option value="completed" ${order.state === 'completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                `;
+                ordersListDiv.appendChild(orderDiv);
+            });
+        }
+    
+        // Call displayOrders() when the page loads
+        displayOrders();
+    
+        // Function to add order
+        function addOrder() {
+            const orderNumber = document.getElementById('order-number').value;
+            const time = document.getElementById('time').value;
+            const state = document.getElementById('state').value;
+    
+            const newOrder = {
+                orderNumber: orderNumber,
+                time: time,
+                state: state
+            };
+    
+            // Retrieve existing orders or initialize an empty array
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            
+            // Add the new order to the beginning of the existing orders array
+            orders.unshift(newOrder);
+            
+            // Save the updated orders array to localStorage
+            localStorage.setItem('orders', JSON.stringify(orders));
+    
+            // Refresh the displayed orders
+            displayOrders();
+    
+            // Clear input fields after adding order
+            document.getElementById('order-number').value = '';
+            document.getElementById('time').value = '';
+            document.getElementById('state').value = 'pending';
+    
+            // Dispatch custom event to notify display_order.html of the changes
+            window.dispatchEvent(new Event('ordersUpdated'));
+        }
+    
+        // Function to toggle visibility of edit state dropdown
+        function toggleEditStateDropdown(index) {
+            const orderCard = document.querySelectorAll('.order-card')[index];
+            const dropdown = orderCard.querySelector('.edit-state-dropdown');
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        }
+    
+        // Function to update order state
+        function updateOrderState(index, dropdown) {
+            const newState = dropdown.value;
+    
+            // Retrieve orders from localStorage
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+            // Update the state of the order at the specified index
+            orders[index].state = newState;
+    
+            // Save the updated orders array to localStorage
+            localStorage.setItem('orders', JSON.stringify(orders));
+    
+            // Refresh the displayed orders
+            displayOrders();
+    
+            // Hide the edit state dropdown after updating the state
+            toggleEditStateDropdown(index);
+    
+            // Dispatch custom event to notify display_order.html of the changes
+            window.dispatchEvent(new Event('ordersUpdated'));
+        }
+    
+        // Function to delete order
+        function deleteOrder(index) {
+            // Retrieve orders from localStorage
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+            // Remove the order at the specified index
+            orders.splice(index, 1);
+    
+            // Save the updated orders array to localStorage
+            localStorage.setItem('orders', JSON.stringify(orders));
+    
+            // Refresh the displayed orders
+            displayOrders();
+    
+            // Dispatch custom event to notify display_order.html of the changes
+            window.dispatchEvent(new Event('ordersUpdated'));
+        }
+    
+        // Function to get background color based on order state
+        function getOrderBackgroundColor(state) {
+            switch (state) {
+                case 'pending':
+                    return 'lightyellow';
+                case 'processing':
+                    return 'lightblue';
+                case 'completed':
+                    return 'lightgreen';
+                default:
+                    return 'transparent';
+            }
+        }
+    
+        // Listen for changes to storage and update orders accordingly
+        window.addEventListener('storage', () => {
+            displayOrders();
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
