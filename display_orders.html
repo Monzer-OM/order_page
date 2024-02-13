@@ -17,11 +17,15 @@
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
+        body {
+            background-color: #D5BFB0;
+            /*backGround color*/
+        }
 
         .order-card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
+            border: 2.5px solid #ddd;
+            border-radius: 20px;
+            padding: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
         }
@@ -70,7 +74,7 @@
 
         .edit-state-dropdown {
             position: absolute;
-            top: calc(100% + 5px); /* Position below the edit button */
+            top: 38px; /* Position below the edit button */
             right: 10px;
             border: 1px solid #ddd;
             border-radius: 3px;
@@ -82,13 +86,18 @@
         .completed {
             background-color: lightgreen; /* Background color for completed orders */
         }
+        h1 {
+        max-width: 100%;
+        height: auto;
+        text-align: center;
+    }
+    
     </style>
 </head>
 <body>
-    <h1>Add Order</h1>
-    <div class="orders-grid" id="orders-list">
-        <!-- Orders will be displayed here -->
-    </div>
+    <h1>
+        <img src="logo 2.svg" alt="Logo">
+    </h1>
 
     <div id="order-form">
         <label for="order-number">Order Number:</label>
@@ -103,6 +112,13 @@
         </select>
         <button onclick="addOrder()">Add Order</button>
     </div>
+
+    <div class="orders-grid" id="orders-list">
+        <!-- Orders will be displayed here -->
+    </div>
+
+</body>
+</html>
 
     <script>
         // Function to display orders
