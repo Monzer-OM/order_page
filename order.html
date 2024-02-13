@@ -15,13 +15,13 @@
         .orders-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            grid-gap: 10px;
+            grid-gap: 20px;
         }
 
         .order-card {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
+            border: 2.5px solid #ddd;
+            border-radius: 20px;
+            padding: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease; /* Add transition effect */
         }
@@ -29,6 +29,12 @@
         .order-details {
             margin-bottom: 5px;
         }
+
+        body {
+            background-color: #D5BFB0;
+            /*backGround color*/
+        }
+        
 
         .order-details p {
             margin: 0;
@@ -47,10 +53,26 @@
             font-style: italic;
             color: #007bff;
         }
+
+        h1{
+            font-family: Arial, sans-serif;
+            text-align: center;
+
+        
+        }
+        h1 img {
+        max-width: 100%;
+        height: auto;
+    }
+
     </style>
 </head>
 <body>
-    <h1>Display Order</h1>
+    <h1>
+        <img src="logo 2.svg" alt="Logo">
+        
+
+    </h1>
     <div class="orders-container" id="orders-container">
         <!-- Orders will be displayed here -->
     </div>
